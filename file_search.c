@@ -98,9 +98,7 @@ void searchFile(char* searchTerm, char* startDir)
 			}
 		}
 	}
-	
-	closedir(dr);
-	
+	closedir(dr);	
 }
 
 float getTime(struct timeval t0, struct timeval t1)

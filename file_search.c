@@ -10,8 +10,15 @@
 int main(int argc, char* argv[])
 {
 
-	printf("Why hello there!");
+	if(argc <= 2)
+	{
+		printf("There are less than three  arguments, this program requires at least 3... Exiting program\n");
+		exit(0);
+	} else if (argc == 3)
+	{
+		printf("there are three things in the command line\n");
 
-
-
+	} else {
+		printf("there are more than 3 things in command line\n");
+	}
 }

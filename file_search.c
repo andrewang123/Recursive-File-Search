@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <string.h>
+#include <dirent.h>
+
 void validatePath(char* startDir);
 void searchFile(char* searchTerm, char* startDir);
 float getTime(struct timeval t0, struct timeval t1);
@@ -35,7 +37,7 @@ int main(int argc, char* argv[])
 		}
 
 		// DO THE RECURSION HERE
-
+		searchFile(searchTerm, startDir);				
 		if(gettimeofday(&end, NULL) < 0)
 		{
 			perror("gettimeofday");
@@ -51,18 +53,14 @@ int main(int argc, char* argv[])
 }
 
 
-
-
-
 void validatePath(char* startDir)
 {
 	// check if start is / make sure does NOT end with /	
 	// if fail exit program
-	printf("entered valid path function\n");
-	printf("%s\n", startDir);
+//	printf("%s\n", startDir);
 	if(startDir[0] == '/' && startDir[strlen(startDir) - 1] != '/')
 	{
-		printf("successfully pass test\n");
+		//printf("successfully pass test\n");
 		return;
 	} else {
 		printf("Starting directory must start with a / and cannot end with a /\n");
@@ -73,8 +71,36 @@ void validatePath(char* startDir)
 // Recursivly search
 void searchFile(char* searchTerm, char* startDir)
 {
-
-
+	DIR * dr = opendir(startDir);
+	struct dirent *de; // pointer for directory entry;
+	if (dr == NULL)
+	{
+		return;
+	}
+	
+	while((de = readdir(dr)) != NULL)
+	{
+		if(strcmp(de->d_name, ".") != 0 && strcmp(de->d_name, "..") != 0) 
+		{
+			if (de->d_type == DT_DIR) // check if it is a directory
+			{
+				if (strstr(de->d_name, searchTerm) != NULL) // check if it matches 
+				{
+					printf("%s:\n", de->d_name);
+				}
+			
+				searchFile(searchTerm, de->d_name);
+			} else {
+				if (strstr(de->d_name, searchTerm) != NULL) // check if it matches 
+				{
+					printf("%s\n", de->d_name);	
+				}
+			}
+		}
+	}
+	
+	closedir(dr);
+	
 }
 
 float getTime(struct timeval t0, struct timeval t1)

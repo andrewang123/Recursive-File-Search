@@ -76,8 +76,7 @@ void searchFile(char* searchTerm, char* startDir)
 	if (dr == NULL)
 	{
 		return;
-	}
-	
+	}	
 	while((de = readdir(dr)) != NULL)
 	{
 		if(strcmp(de->d_name, ".") != 0 && strcmp(de->d_name, "..") != 0) 
@@ -87,8 +86,7 @@ void searchFile(char* searchTerm, char* startDir)
 				if (strstr(de->d_name, searchTerm) != NULL) // check if it matches 
 				{
 					printf("%s:\n", de->d_name);
-				}
-			
+				}		
 				searchFile(searchTerm, de->d_name);
 			} else {
 				if (strstr(de->d_name, searchTerm) != NULL) // check if it matches 

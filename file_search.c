@@ -85,9 +85,26 @@ void searchFile(char* searchTerm, char* startDir)
 			{
 				continue; // continue to the next iteration of the loop
 			}
+			
+			// only print if matches the term!
 			printf("%s/%s:\n", startDir, dePtr->d_name);	
-	
+
+
+
+			//startDir + / +dePtr->d_name
+			char * newDir = malloc(strlen(startDir) + strlen(dePtr->d_name) + 2);
+			strcpy(newDir, startDir);
+			strcat(newDir, "/");
+			strcat(newDir, dePtr->d_name);
+			printf("THE NEWDIR IS %s \n", newDir);
+			searchFile(searchTerm, newDir);	
+
+
+
+
 		} else {
+
+			// only print if matches the term
 			printf("%s/%s\n", startDir, dePtr->d_name);	
 	
 		}

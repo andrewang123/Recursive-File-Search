@@ -72,29 +72,50 @@ void validatePath(char* startDir)
 void searchFile(char* searchTerm, char* startDir)
 {
 	DIR * dr = opendir(startDir);
-	struct dirent *de; // pointer for directory entry;
+	struct dirent *dePtr; // pointer for directory entry;
 	if (dr == NULL)
 	{
 		return;
 	}	
-	while((de = readdir(dr)) != NULL)
-	{
-		if(strcmp(de->d_name, ".") != 0 && strcmp(de->d_name, "..") != 0) 
+	while((dePtr = readdir(dr)) != NULL)
+	{		
+		if(dePtr -> d_type == DT_DIR)
 		{
-			if (de->d_type == DT_DIR) // check if it is a directory
+			if(strcmp(dePtr->d_name, ".") == 0 || strcmp(dePtr->d_name, "..") == 0)
 			{
-				if (strstr(de->d_name, searchTerm) != NULL) // check if it matches 
-				{
-					printf("%s:\n", de->d_name);
-				}		
-				searchFile(searchTerm, de->d_name);
+				continue; // continue to the next iteration of the loop
+			}
+			printf("%s/%s:\n", startDir, dePtr->d_name);	
+	
+		} else {
+			printf("%s/%s\n", startDir, dePtr->d_name);	
+	
+		}
+	
+	/*		if((strcmp(dePtr->d_name, ".") == 0) || (strcmp(dePtr->d_name, "..") == 0)) 
+			{
+				// does nothing lol
+			}else if (dePtr->d_type == DT_DIR) // check if it is a directory
+			{
+		//		if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
+		//		{
+					printf("%s/%s:\n", startDir, dePtr->d_name);
+					// add the entire strcat /
+		//		}
+				char * newDir = strdup(startDir);
+				strcat(newDir, "/");
+				strcat(newDir, dePtr->d_name);	
+	
+//				searchFile(searchTerm, newDir);
+						
 			} else {
-				if (strstr(de->d_name, searchTerm) != NULL) // check if it matches 
+				if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
 				{
-					printf("%s\n", de->d_name);	
+					printf("here\n");
+					printf("%s/%s\n", startDir, dePtr->d_name);	
 				}
 			}
-		}
+	*/	
 	}
 	closedir(dr);	
 }

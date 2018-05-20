@@ -87,8 +87,10 @@ void searchFile(char* searchTerm, char* startDir)
 			}
 			
 			// only print if matches the term!
-			printf("%s/%s:\n", startDir, dePtr->d_name);	
-
+			if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
+			{	
+				printf("%s/%s:\n", startDir, dePtr->d_name);	
+			}
 
 
 			//startDir + / +dePtr->d_name
@@ -96,7 +98,7 @@ void searchFile(char* searchTerm, char* startDir)
 			strcpy(newDir, startDir);
 			strcat(newDir, "/");
 			strcat(newDir, dePtr->d_name);
-			printf("THE NEWDIR IS %s \n", newDir);
+//			printf("THE NEWDIR IS %s \n", newDir);
 			searchFile(searchTerm, newDir);	
 
 
@@ -105,8 +107,10 @@ void searchFile(char* searchTerm, char* startDir)
 		} else {
 
 			// only print if matches the term
-			printf("%s/%s\n", startDir, dePtr->d_name);	
-	
+			if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
+			{
+				printf("%s/%s\n", startDir, dePtr->d_name);	
+			}
 		}
 	
 	/*		if((strcmp(dePtr->d_name, ".") == 0) || (strcmp(dePtr->d_name, "..") == 0)) 

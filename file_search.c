@@ -80,77 +80,73 @@ void validatePath(char* startDir)
 	}
 }
 
-// Recursivly search
+// Recursively search for all the directories and files that has the search term within
+// Parameters: searchTerm that the user wanted to search for and startDir which is the directory that the user wants to look into
+// Returns: N/A
 void searchFile(char* searchTerm, char* startDir)
 {
+	// opens a directory and stores it into a DIR pointer variable
+	// Returns a pointer to an object of type DIR if a directory otherwise returns a NULLPTR
+	// Parameters: it takes a pathname
 	DIR * dr = opendir(startDir);
+	
+	// Create a struct dirent that contains the information that we will need to print the files
+	// ino_t d_ino -> the inode number
+	// off_t d_off -> not a offset
+	// unsigned short d_reclen -> length of the record
+	// unsigned char d_type -> the type of the file (We will be using this to determine if directory
+	// char d_name[] -> null terminated file (We will be using this to determine the name of the file/dir
 	struct dirent *dePtr; // pointer for directory entry;
-	if (dr == NULL)
+	if (dr == NULL) // if the directory cannot be opened exit the function
 	{
 		return;
 	}	
+	// readdir reads a directory
+	// parameters: takes in a DIR * which is the pointer that is the opened directory
+	// returns: a struct dirent which has all of the information(name of the file/directory, and type)
+	// returns a null if the end of the directory stream is reached
 	while((dePtr = readdir(dr)) != NULL)
 	{		
+		// if we are currently looking at a directory
 		if(dePtr -> d_type == DT_DIR)
 		{
+			// ignore . and .. directories, move onto the next thing in the directory
 			if(strcmp(dePtr->d_name, ".") == 0 || strcmp(dePtr->d_name, "..") == 0)
 			{
 				continue; // continue to the next iteration of the loop
 			}
-			
-			// only print if matches the term!
+			// check if the search term is within
+			// Finds the first occurance of the 2nd param in the 1st param
+			// Parameter: 1st parameters is the main string that you are trying to find the 2nd string in
+			// Returns: the first occurance of the 2nd parameter in the first param, otherwise return NULL
 			if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
 			{	
 				printf("%s/%s:\n", startDir, dePtr->d_name);	
 			}
-
-
-			//startDir + / +dePtr->d_name
+			// create the new directory that is the olddirectory + "/" + directoryname in the heap
 			char * newDir = malloc(strlen(startDir) + strlen(dePtr->d_name) + 2);
-			strcpy(newDir, startDir);
-			strcat(newDir, "/");
+			// strcpy takes in two parameters the destination to be copied too and the thing that you want to copy
+			strcpy(newDir, startDir);	
+			// appends the string pointed to by the first parameter, it appends
+			// whatever is in the second paramter
+			strcat(newDir, "/");	
+			// appends the string pointed to by the first parameter, it appends
+			// whatever is in the second paramter
 			strcat(newDir, dePtr->d_name);
-//			printf("THE NEWDIR IS %s \n", newDir);
+			// Recursivly call the function again since it is a directory
 			searchFile(searchTerm, newDir);	
-
-
-
-
+			free(newDir); // free up the dynamically create string
 		} else {
-
-			// only print if matches the term
+			// check if the search term is within
+			// Finds the first occurance of the 2nd param in the 1st param
+			// Parameter: 1st parameters is the main string that you are trying to find the 2nd string in
+			// Returns: the first occurance of the 2nd parameter in the first param, otherwise return NULL
 			if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
 			{
 				printf("%s/%s\n", startDir, dePtr->d_name);	
 			}
 		}
-	
-	/*		if((strcmp(dePtr->d_name, ".") == 0) || (strcmp(dePtr->d_name, "..") == 0)) 
-			{
-				// does nothing lol
-			}else if (dePtr->d_type == DT_DIR) // check if it is a directory
-			{
-		//		if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
-		//		{
-					printf("%s/%s:\n", startDir, dePtr->d_name);
-					// add the entire strcat /
-		//		}
-				char * newDir = strdup(startDir);
-				strcat(newDir, "/");
-				strcat(newDir, dePtr->d_name);	
-	
-//				searchFile(searchTerm, newDir);
-						
-			} else {
-				if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
-				{
-					printf("here\n");
-					printf("%s/%s\n", startDir, dePtr->d_name);	
-				}
-			}
-	*/	
 	}
-	// FREE MEMORY
 	closedir(dr);	
 }
 

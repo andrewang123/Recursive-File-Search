@@ -1,19 +1,38 @@
 // Andrew Ang
 // Professor Dingler
-// Lab 4: Recursive File Search
+// Lab 4: Recursive File Search Threaded Version
 // The purpose of this lab is to print out all of the files and directories given the users input into the command line
-
+// This lab is the threaded version of the recursive file search.
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
 #include <string.h>
 #include <dirent.h>
+#include <pthread.h>
 
+char* searchTerm; // create a global variable for the search term
+void* thread_func(void* path);
 void validatePath(char* startDir);
 void searchFile(char* searchTerm, char* startDir);
 float getTime(struct timeval t0, struct timeval t1);
 int main(int argc, char* argv[])
 {
+	// Create four threads
+	pthread_t firstThread;
+	//pthread_t secondThread;
+	//pthread_t thirdThread;
+	//pthread_t fourthThread;
+	
+	int ret = pthread_create(&firstThread, NULL, thread_func, NULL);// probably file name
+	//int ret2 = pthread_create(&secondThread, NULL, thread_func, NULL);// probably file name
+	//int ret3 = pthread_create(&thirdThread, NULL, thread_func, NULL);// probably file name
+	//int ret4 = pthread_create(&fourthThread, NULL, thread_func, NULL);// probably file name
+	
+	pthread_join(firstThread, 0);
+	//pthread_join(secondThread, 0);
+	//pthread_join(thirdThread, 0);
+	//pthread_join(fourthThread, 0);
+	
 	// Create a struct that will represent the time that has elapsed
 	// timeval two member variables: tv_sec (seconds) and tv_usec (microseconds)
 	struct timeval start; 
@@ -28,7 +47,7 @@ int main(int argc, char* argv[])
 		// strdup returns a pointer to a new string which is a duplicate of the parameter passed
 		// it is essentially a strcpy and a malloc built into one
 		// make a deep copy of the buffer, it is like strcpy but dynamically allocated memory		
-		char* searchTerm = strdup(argv[1]);
+		searchTerm = strdup(argv[1]);
 		char* startDir = strdup(argv[2]);
 		// ensure that the path stat with a / and does not end with a / (absolute path)
 		validatePath(startDir);
@@ -65,6 +84,15 @@ int main(int argc, char* argv[])
 	}
 }
 
+
+void* thread_func(void* parameter) 
+{
+
+
+
+
+	
+}
 // Validates the path that the user specifies in the command line
 // Parameters: the path the user specifies
 // Returns: N/A

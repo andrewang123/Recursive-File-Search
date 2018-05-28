@@ -6,3 +6,7 @@ Example: file_search .c /home/user/mystuff
 * ensures that the starting directory is an absolute path
 * there may be spaces in search term if called in quotations
 * It will also time the elapsed time til completed of search
+
+---
+Recursive File Search Threaded version. This lab will be the exact same as the previous lab except for:  
+* There will be four threads involved

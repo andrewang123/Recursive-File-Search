@@ -10,28 +10,22 @@
 #include <dirent.h>
 #include <pthread.h>
 
+#define TOTALTHREADS 4
+
 char* searchTerm; // create a global variable for the search term
 void* thread_func(void* path);
 void validatePath(char* startDir);
-void searchFile(char* searchTerm, char* startDir);
+void searchFile(char* searchTerm, char* startDir, int num);
 float getTime(struct timeval t0, struct timeval t1);
+
+pthread_t threads[TOTALTHREADS];
+char* everything[10];
+
 int main(int argc, char* argv[])
 {
-	// Create four threads
-	pthread_t firstThread;
-	//pthread_t secondThread;
-	//pthread_t thirdThread;
-	//pthread_t fourthThread;
+//	int ret = pthread_create(&firstThread, NULL, thread_func, NULL);// probably file name
 	
-	int ret = pthread_create(&firstThread, NULL, thread_func, NULL);// probably file name
-	//int ret2 = pthread_create(&secondThread, NULL, thread_func, NULL);// probably file name
-	//int ret3 = pthread_create(&thirdThread, NULL, thread_func, NULL);// probably file name
-	//int ret4 = pthread_create(&fourthThread, NULL, thread_func, NULL);// probably file name
-	
-	pthread_join(firstThread, 0);
-	//pthread_join(secondThread, 0);
-	//pthread_join(thirdThread, 0);
-	//pthread_join(fourthThread, 0);
+//	pthread_join(firstThread, 0);
 	
 	// Create a struct that will represent the time that has elapsed
 	// timeval two member variables: tv_sec (seconds) and tv_usec (microseconds)
@@ -61,8 +55,17 @@ int main(int argc, char* argv[])
 			exit(0);
 		}
 		// recursivly search for the files and directories
-		searchFile(searchTerm, startDir);			
-		
+		int num = 0;
+		searchFile(searchTerm, startDir, num);			
+
+
+		for(int i = 0; i < (sizeof(everything) / sizeof(everything[0])); i++)
+		{
+			printf("EVERYTHING %s\n", everything[i]);
+
+		}
+
+
 		// gets the time of day at the moment and puts it in end
 		// returns a number,0 if success and -1 if failure
 		// NULL is to specifying the time zone	
@@ -89,7 +92,7 @@ void* thread_func(void* parameter)
 {
 
 
-
+	pthread_exit(0);
 
 	
 }
@@ -111,7 +114,7 @@ void validatePath(char* startDir)
 // Recursively search for all the directories and files that has the search term within
 // Parameters: searchTerm that the user wanted to search for and startDir which is the directory that the user wants to look into
 // Returns: N/A
-void searchFile(char* searchTerm, char* startDir)
+void searchFile(char* searchTerm, char* startDir, int num)
 {
 	// opens a directory and stores it into a DIR pointer variable
 	// Returns a pointer to an object of type DIR if a directory otherwise returns a NULLPTR
@@ -143,6 +146,19 @@ void searchFile(char* searchTerm, char* startDir)
 			{
 				continue; // continue to the next iteration of the loop
 			}
+				// create the new directory that is the olddirectory + "/" + directoryname in the heap
+				char * newDir = malloc(strlen(startDir) + strlen(dePtr->d_name) + 2);
+				// strcpy takes in two parameters the destination to be copied too and the thing that you want to copy
+				strcpy(newDir, startDir);	
+				// appends the string pointed to by the first parameter, it appends
+				// whatever is in the second paramter
+				strcat(newDir, "/");	
+				// appends the string pointed to by the first parameter, it appends
+				// whatever is in the second paramter
+				strcat(newDir, dePtr->d_name);
+				// Recursivly call the function again since it is a directory
+
+	
 			// check if the search term is within
 			// Finds the first occurance of the 2nd param in the 1st param
 			// Parameter: 1st parameters is the main string that you are trying to find the 2nd string in
@@ -150,20 +166,11 @@ void searchFile(char* searchTerm, char* startDir)
 			if (strstr(dePtr->d_name, searchTerm) != NULL) // check if it matches 
 			{	
 				printf("%s/%s:\n", startDir, dePtr->d_name);	
+				scanf(everything[num], newDir);
+				num++;
 			}
-			// create the new directory that is the olddirectory + "/" + directoryname in the heap
-			char * newDir = malloc(strlen(startDir) + strlen(dePtr->d_name) + 2);
-			// strcpy takes in two parameters the destination to be copied too and the thing that you want to copy
-			strcpy(newDir, startDir);	
-			// appends the string pointed to by the first parameter, it appends
-			// whatever is in the second paramter
-			strcat(newDir, "/");	
-			// appends the string pointed to by the first parameter, it appends
-			// whatever is in the second paramter
-			strcat(newDir, dePtr->d_name);
-			// Recursivly call the function again since it is a directory
-			searchFile(searchTerm, newDir);	
-			free(newDir); // free up the dynamically create string
+				searchFile(searchTerm, newDir, num);	
+				free(newDir);						
 		} else {
 			// check if the search term is within
 			// Finds the first occurance of the 2nd param in the 1st param
@@ -177,6 +184,7 @@ void searchFile(char* searchTerm, char* startDir)
 	}
 	closedir(dr);	
 }
+
 
 // Calculates the amount of time it took in miliseconds between two timevals
 // Parameter: The start and ending time values

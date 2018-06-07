@@ -3,7 +3,10 @@ Operating Systems
 Professor Dingler
 Homework 5 Questions
 
-1a.
+Test results:
+
+1a. The multiversion performance of the multi-threaded version of the program doesnt show 4x speed because it is
+dependent on how you implement the threads. For example, if you create a thread every single time you see a directory, than it would not make any sense. What I mean by this is that 
 
 b.
 

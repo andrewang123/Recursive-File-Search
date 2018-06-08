@@ -12,7 +12,7 @@
 void recur_file_search(char *file);
 
 // takes in a struct that is the starting and ending point of the array to print out
-print the name
+//print the name
 void* thread_func(void* args);
 
 //share search term globally (rather than passing recursively)

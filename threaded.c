@@ -11,22 +11,23 @@
 // prints name if empty dir or not a dir (leaves)
 void recur_file_search(char *file);
 
-
+// takes in a struct that is the starting and ending point of the array to print out
+print the name
 void* thread_func(void* args);
 
 //share search term globally (rather than passing recursively)
 const char *search_term;
 
-
-
+// array that has all of the file names and directories
 char* everything[255];
+// counter with all of the items into the array
 int num = 0;
-
+// a struct used to passed two varaibles which is the starting and ending points
 struct startEndPoints
 {
 	int start;
 	int end;
-}
+};
 
 int main(int argc, char **argv)
 {
@@ -37,40 +38,6 @@ int main(int argc, char **argv)
 				<search_term> starting at <dir>\n");
 		exit(1);
 	}
-	int totalLen =(sizeof(everything) / sizeof(everything[0]));
-	// create the structs
-	struct startEndPoints first;
-	first.start = 0; // 0 -> 0
-	first.end = totalLen / 4; // 2 -> 1
-	
-	struct startEndPoints second;
-	second.start = first.end + 1; // 3 -> 2
-	second.end =  first.end * 2 + 1; // 5 -> 3
-
-	struct startEndPoints third;
-	third.start = first.end * 2 + 2; // 6 -> 4
-	third.end = first.end * 2 + 3; // 8 - > 5
-	
-	struct startEndPoints fourth;
-	fourth.start = first.end * 3 + 3; //9 -> 
-	fourth.end = totalLen - 1; // 10
-
-	// Create four threads
-	pthread_t firstThread;
-	pthread_t secondThread;
-	pthread_t thirdThread;
-	pthread_t fourthThread;
-	
-	int ret = pthread_create(&firstThread, NULL, thread_func, &first);
-	int ret2 = pthread_create(&firstThread, NULL, thread_func, &second);
-	int ret3 = pthread_create(&firstThread, NULL, thread_func, &third);
-	int ret4 = pthread_create(&firstThread, NULL, thread_func, &fourth);
-
-	pthread_join(&firstThread, NULL);
-	pthread_join(&secondThread, NULL);
-	pthread_join(&thirdThread, NULL);
-	pthread_join(&fourthThread, NULL);
-
 	
 	//don't need to bother checking if term/directory are swapped, since we can't
 	// know for sure which is which anyway
@@ -91,14 +58,65 @@ int main(int argc, char **argv)
 	gettimeofday(&start, NULL);
 
 	recur_file_search(argv[2]);
-		
-	for(int i = 0; i < totalLen; i++)
+	
+	// create structs for each of the thread
+	int totalLen = num;
+	struct startEndPoints first;
+	struct startEndPoints second;
+	struct startEndPoints third;
+	struct startEndPoints fourth;
+
+	// if the total length of the array is less than four
+	if(totalLen < 4)
 	{
-		printf("EVERYTHING %s\n", everything[i]);
+		// create the structs
+		first.start = 0; 
+		first.end = 1; 
+			
+		second.start = 1; 
+		second.end =  2; 
 
+		third.start = 2;
+		third.end = 3; 
+	
+		fourth.start = 3; 
+		fourth.end = 4; 
+	} else {
+	
+		// create the structs
+		first.start = 0; 
+		first.end = first.start + totalLen / 4 + 1; 
+		
+		second.start = first.end + totalLen / 4 - 1; 
+		second.end =  second.start + totalLen / 4 + 1; 
+	
+		third.start = second.end + totalLen / 4 - 1;
+		third.end = third.start + totalLen / 4 + 1; 
+	
+		fourth.start = third.end + totalLen / 4 - 1; 
+		fourth.end = totalLen; 
 	}
+	// Create four threads
+	pthread_t firstThread;
+	pthread_t secondThread;
+	pthread_t thirdThread;
+	pthread_t fourthThread;
 
-	gettimeofday(&end, NULL);
+	// run the threads, first parameter is the thread that is being ran, 2nd is attributes, the funciton being called, and the 
+	// arguments passed	
+	int ret = pthread_create(&firstThread, NULL, thread_func, &first);
+	int ret2 = pthread_create(&secondThread, NULL, thread_func, &second);
+	int ret3 = pthread_create(&thirdThread, NULL, thread_func, &third);
+	int ret4 = pthread_create(&fourthThread, NULL, thread_func, &fourth);
+	
+	// waits for the threads to finish 
+	pthread_join(firstThread, NULL);
+	pthread_join(secondThread, NULL);
+	pthread_join(thirdThread, NULL);
+	pthread_join(fourthThread, NULL);
+
+		
+	gettimeofday(&end, NULL); // get the end of the time
 	printf("Time: %ld\n", (end.tv_sec * 1000000 + end.tv_usec)
 			- (start.tv_sec * 1000000 + start.tv_usec));
 
@@ -138,7 +156,7 @@ void recur_file_search(char *file)
 		// and if so print the file to the screen (with full path)
 		if(strstr(file, search_term) != NULL)
 		{
-			printf("%s\n", file);
+			//printf("%s\n", file);
 			everything[num] = (char*)malloc(255 * sizeof(char));	
 			strcpy(everything[num], file);
 			num++;
@@ -152,7 +170,7 @@ void recur_file_search(char *file)
 	// matches the search term
 	if(strstr(file, search_term) != NULL)
 	{
-		printf("%s/\n", file);
+		//printf("%s/\n", file);
 		everything[num] = (char*)malloc(255 * sizeof(char));	
 		strcpy(everything[num], file);
 		num++;
@@ -197,14 +215,24 @@ void recur_file_search(char *file)
 	closedir(d);
 }
 
+
+// function pointer 
+// takes in a parameter which is a structs that are the starting and ending point of the evenly distributed 
+// distributed into fourths
 void* thread_func(void* args) 
 {
-	struct startEndPoints *arg_struct = (struct startEndPoints*) arg;
-	int starting = arg_struct -> start;
-	int ending = arg_struct -> end;
-	for(int i = starting; i < ending; i++)
+	// get the items from the struct
+	struct startEndPoints *arg_struct = (struct startEndPoints*) args;
+	
+	// check if the starting is less than the num which means that there are less values than the total
+	if (arg_struct -> start < num)
 	{
-		printf("%s\n", everything[i]);
-	}
-	pthread_exit(0);
-} 
+		int starting = arg_struct -> start;
+		int ending = arg_struct -> end;
+		for(int i = starting; i < ending; i++)
+		{
+			printf("%s\n", everything[i]);
+		}
+	}	
+}
+ 

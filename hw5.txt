@@ -4,18 +4,21 @@ Professor Dingler
 Homework 5 Questions
 
 Test results:
+The results of the threaded version is worse than the regular version because of the way I implemented it.
+The reason it is happening the way it is is because the regular version is the base time. When I implemented the way I did in the threaded version I did what I did in the regular version and tacked up the thread stuff. What I basically did for the threaded version is that I put everything in a array of strings and divided up the work to be printing the entire array. It was divided into fourths.
 
 1a. The multiversion performance of the multi-threaded version of the program doesnt show 4x speed because it is
-dependent on how you implement the threads. For example, if you create a thread every single time you see a directory, than it would not make any sense. What I mean by this is that 
+dependant on how you implement it. For instance, the way I implemented it, it took longer. On the other hand, if you tried to do this assignemtn with the mindset of trying to get the most optimal solution than it still would not be 4x speed because of the fact that the threads would have to do stuff and once it is done doing stuff it has to wait to be assigned.
 
-b.
-
-
-c.
+b. The performance of the multithreaded version does not depend too much on the directory structure being searched. For instance, it is calling the same function over and over again and that function is just printing out values. The only way i see that it affects the directory structure is if there are less than 4 things to be looked at, I had to make a different case for that. Also, if there are a bigger directory structure, that means that it will take a longer time.
 
 
-2.
+c. Yes the performace could be improved. I am not using the four threads as efficiently possible because it is the same time as just therecursive file search and things that we need to do are tacked on to the end of that. What I would do differently to make it more effiecient is to each time i see a directory make a thread that traverses that directory and so on and so forth. When the thread has reached the "end" than move it from the queue and get the next available pthread.
 
 
+2. One way that the payload could have been done differently is that if you see a directory create a thread each time. The reason why this would be more effiecient than the way now because you would be constantly looking for more directories.
+This would have been more efficient because you would have falled one function over that would keep looking and printing the items.
+Another way that the payload could have been done differnetly is that you could have one thread that would look for the directories and each time you see a directory you could have a thread that would just print out all of the contents of the directory. You could then have another thread do the same thing. To simplify you would have two threads looking and two threads printing.
 
-3.
+
+3. Running the sae program twice in quick succession usually resut in a better performance the second time because the previous data was cached. 
